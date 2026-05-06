@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Litigio Pro | Supreme Court Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #0a0f1a; }
+        .font-serif-legal { font-family: 'Playfair Display', serif; }
+
+        /* Micrófono Animado */
+        .mic-active { 
+            background-color: #c4a47c !important; 
+            box-shadow: 0 0 25px rgba(196, 164, 124, 0.4);
+            animation: pulse-gold 1.5s infinite; 
+        }
+        @keyframes pulse-gold {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Barras de Progreso Elegantes */
+        .metric-bar { transition: width 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        
+        /* Scrollbar Invisible */
+        #chat-audiencia::-webkit-scrollbar { width: 3px; }
+        #chat-audiencia::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+
+        /* Animación de Carga */
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #161d2f;
+            border-top: 2px solid #c4a47c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-slate-200 overflow-x-hidden">
+
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-[#0a0f1a] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="loader-ring mb-8"></div>
+        <h2 class="font-serif-legal text-3xl text-white italic mb-2">Compilando Expedientes</h2>
+        <p class="text-[10px] tracking-[0.5em] text-[#c4a47c] uppercase animate-pulse">Sincronizando con bases de datos jurídicas</p>
+    </div>
+
+    <nav class="border-b border-slate-800 bg-[#0a0f1a]/80 backdrop-blur-md sticky top-0 z-40 p-5">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 bg-[#c4a47c] flex items-center justify-center rounded-sm font-black text-[#0a0f1a]">L</div>
+                <h1 class="text-xs font-black tracking-[0.4em] uppercase text-slate-400">Sala de Litigio Virtual <span class="text-[#c4a47c]">Pro</span></h1>
+            </div>
+            <button onclick="toggleContexto()" class="text-[10px] font-bold tracking-widest text-[#c4a47c] hover:text-white transition-colors border border-[#c4a47c]/30 px-4 py-2 rounded-full uppercase">
+                📖 Ver Expediente
+            </button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto mt-8 p-4">
+        <div id="seccion-principal" class="max-w-4xl mx-auto text-center py-20">
+            <h2 class="font-serif-legal text-6xl mb-6 text-white italic">Simulador de Estrados</h2>
+            <p class="text-slate-500 mb-12 text-lg">Entrenamiento avanzado de litigación oral con evaluación algorítmica.</p>
+            <button id="btn-generar" class="bg-[#c4a47c] text-[#0a0f1a] px-12 py-5 rounded-full font-black hover:bg-white transition-all shadow-xl shadow-[#c4a47c]/10 uppercase tracking-widest text-sm">
+                Generar Nuevos Expedientes
+            </button>
+            <div id="contenedor-casos" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 text-left"></div>
+        </div>
+
+        <div id="sala-audiencia" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            
+            <div class="lg:col-span-1 space-y-4">
+                <div class="bg-[#161d2f] border border-slate-800 p-8 rounded-[32px] shadow-2xl">
+                    <h3 class="text-[10px] font-black text-[#c4a47c] uppercase tracking-[0.3em] mb-10 text-center">Desempeño Técnico</h3>
+                    
+                    <div class="space-y-8">
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                                <span>Fundamentación Legal</span>
+                                <span id="val-legal" class="text-[#c4a47c]">0%</span>
+                            </div>
+                            <div class="h-[2px] bg-slate-800 w-full overflow-hidden">
+                                <div id="bar-legal" class="metric-bar h-full bg-[#c4a47c] w-0"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                                <span>Coherencia Lógica</span>
+                                <span id="val-logica" class="text-[#c4a47c]">0%</span>
+                            </div>
+                            <div class="h-[2px] bg-slate-800 w-full overflow-hidden">
+                                <div id="bar-logica" class="metric-bar h-full bg-[#c4a47c] w-0"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                                <span>Persuasión Retórica</span>
+                                <span id="val-retorica" class="text-[#c4a47c]">0%</span>
+                            </div>
+                            <div class="h-[2px] bg-slate-800 w-full overflow-hidden">
+                                <div id="bar-retorica" class="metric-bar h-full bg-[#c4a47c] w-0"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                                <span>Técnica Procesal</span>
+                                <span id="val-procesal" class="text-[#c4a47c]">0%</span>
+                            </div>
+                            <div class="h-[2px] bg-slate-800 w-full overflow-hidden">
+                                <div id="bar-procesal" class="metric-bar h-full bg-[#c4a47c] w-0"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                                <span>Uso Terminología</span>
+                                <span id="val-terminos" class="text-[#c4a47c]">0%</span>
+                            </div>
+                            <div class="h-[2px] bg-slate-800 w-full overflow-hidden">
+                                <div id="bar-terminos" class="metric-bar h-full bg-[#c4a47c] w-0"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p id="feedback-sutil" class="text-[10px] text-slate-500 italic text-center mt-12 border-t border-slate-800 pt-6 leading-relaxed">Esperando intervención del letrado...</p>
+                </div>
+                
+                <div class="bg-[#161d2f]/50 border border-slate-800 p-6 rounded-3xl text-center">
+                    <span id="cronometro" class="text-3xl font-mono font-light text-slate-300 tracking-tighter">00:00</span>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 flex flex-col h-[750px] bg-[#111827]/30 border border-slate-800 rounded-[40px] relative overflow-hidden">
+                <div id="chat-audiencia" class="flex-1 overflow-y-auto p-10 flex flex-col gap-8 scroll-smooth">
+                    </div>
+
+                <div class="p-10 bg-[#0a0f1a]/80 backdrop-blur-xl border-t border-slate-800">
+                    <div class="flex flex-col items-center gap-6">
+                        <button id="btn-microfono" class="w-24 h-24 bg-[#161d2f] border border-slate-700 rounded-full flex items-center justify-center text-3xl shadow-2xl transition-all hover:border-[#c4a47c] hover:text-[#c4a47c]">
+                            🎤
+                        </button>
+                        <p class="text-[9px] font-bold text-slate-600 uppercase tracking-[0.3em]">Envío por Voz Automatizado</p>
+                        <textarea id="input-argumento" class="hidden"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="panel-contexto" class="fixed top-0 right-0 h-full w-[400px] bg-[#161d2f] border-l border-slate-800 transform translate-x-full transition-transform duration-700 z-50 p-12 overflow-y-auto shadow-[-50px_0_100px_rgba(0,0,0,0.8)]">
+        <div class="flex justify-between items-center mb-12">
+            <h4 class="text-[#c4a47c] font-black text-xs uppercase tracking-[0.4em]">Expediente Judicial</h4>
+            <button onclick="toggleContexto()" class="text-slate-600 hover:text-white text-2xl font-light">×</button>
+        </div>
+        <h2 id="contexto-titulo" class="font-serif-legal text-2xl text-white italic mb-6"></h2>
+        <div id="contenido-expediente" class="text-slate-400 text-sm leading-[2] font-light italic"></div>
+    </div>
+
+    <div id="modal-contexto" class="hidden fixed inset-0 bg-[#0a0f1a]/98 backdrop-blur-2xl flex items-center justify-center z-50 p-6">
+        <div class="max-w-xl w-full text-center">
+            <h2 id="modal-titulo" class="font-serif-legal text-4xl text-white italic mb-4"></h2>
+            <div class="h-[1px] w-20 bg-[#c4a47c] mx-auto mb-8"></div>
+            <p id="modal-descripcion" class="text-slate-400 text-lg italic leading-relaxed mb-12"></p>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="setRol('Abogado Defensor')" class="border border-blue-500/30 bg-blue-500/5 text-blue-400 py-6 rounded-2xl font-bold hover:bg-blue-500 hover:text-white transition-all uppercase text-[10px] tracking-widest">Defensa</button>
+                <button onclick="setRol('Fiscalía')" class="border border-red-500/30 bg-red-500/5 text-red-400 py-6 rounded-2xl font-bold hover:bg-red-500 hover:text-white transition-all uppercase text-[10px] tracking-widest">Fiscalía</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
