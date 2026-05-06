@@ -1,5 +1,5 @@
 // --- CONFIGURACIÓN Y ESTADO GLOBAL ---
-const URL_BASE = "http://127.0.0.1:5000";
+const URL_BASE = "https://litigio-pro-mvpa.onrender.com";
 let casoActual = null;
 let rolUsuario = "";
 let turnosRealizados = 0;
